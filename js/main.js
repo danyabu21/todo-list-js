@@ -9,6 +9,14 @@ const todoList = document.getElementById("todo-list");
 let todoDataBase = [];
 let oldEditInput;
 
+function draggbleList() {
+  new Sortable(todoList, {
+    animation: 350,
+  });
+}
+
+draggbleList();
+
 function setDataBase(data) {
   return localStorage.setItem("todoList", JSON.stringify(data));
 }
