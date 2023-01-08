@@ -6,7 +6,7 @@ const editCancelButton = document.getElementById("cancel-edit-btn");
 const toolbarEl = document.getElementById("toolbar");
 const todoFilter = document.getElementById("filter");
 const todoList = document.getElementById("todo-list");
-const todoDataBase = [];
+let todoDataBase = [];
 let oldEditInput;
 
 function setDataBase(data) {
@@ -27,23 +27,28 @@ function createTodoElements(value) {
 
   const finishButton = document.createElement("button");
   finishButton.classList.add("finish-todo");
+  finishButton.setAttribute("title", "Finalizar Tarefa");
   finishButton.innerHTML = "<i class='bx bx-check'></i>";
   todoContainer.appendChild(finishButton);
 
   const editButton = document.createElement("button");
   editButton.classList.add("edit-todo");
+  editButton.setAttribute("title", "Editar tarefa");
   editButton.innerHTML = "<i class='bx bx-edit-alt'></i>";
   todoContainer.appendChild(editButton);
 
   const removeButton = document.createElement("button");
   removeButton.classList.add("remove-todo");
+  removeButton.setAttribute("title", "Remover tarefa");
   removeButton.innerHTML = "<i class='bx bxs-tag-x'></i>";
   todoContainer.appendChild(removeButton);
 
   todoList.appendChild(todoContainer);
-  todoDataBase.push({
-    title: todoTitle.innerText,
-  });
+  todoDataBase = [];
+  setTimeout(() => {
+    todoDataBase.push(todoList.innerHTML);
+    setDataBase(todoDataBase);
+  }, 100);
 }
 
 function createTask(e) {
@@ -55,8 +60,6 @@ function createTask(e) {
     createTodoElements(addTodoInputValue);
     addTodoInput.focus();
     addTodoInput.value = "";
-
-    setDataBase(todoDataBase);
   }
 }
 
@@ -70,6 +73,7 @@ function editTask(value) {
     }
   });
   toggleForms();
+  return value;
 }
 
 function toggleForms() {
@@ -93,21 +97,32 @@ document.addEventListener("click", ({ target }) => {
   }
 
   if (targetEl.classList.contains("finish-todo")) {
-    parentTargetEl.classList.toggle("done");
-    if (targetEl.hasAttribute("checked")) {
-      targetEl.removeAttribute("checked");
+    if (parentTargetEl.hasAttribute("checked")) {
+      parentTargetEl.removeAttribute("checked");
     } else {
-      target.setAttribute("checked", "");
+      parentTargetEl.setAttribute("checked", "");
     }
+    todoDataBase.push(todoList.innerHTML);
+    setDataBase(todoDataBase);
   }
 
   if (targetEl.classList.contains("edit-todo")) {
     oldEditInput = parentTargetEl.innerText;
-    console.log(oldEditInput);
+    todoDataBase.push(todoList.innerHTML);
+    setDataBase(todoDataBase);
     toggleForms();
   }
+
   if (targetEl.classList.contains("remove-todo")) {
     parentTargetEl.remove();
+    const localData = getDataBase();
+    const removeTodo = localData.map((todo) => {
+      return todo
+        .trim()
+        .replace(`<li class="todo">${parentTargetEl.innerHTML}</li>`, "");
+    });
+
+    setDataBase(removeTodo);
   }
 });
 
@@ -119,6 +134,11 @@ editCancelButton.addEventListener("click", (e) => {
 editForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const editInputValue = editInput.value;
+  const localData = getDataBase().map((item) => {
+    let itemReplace = item.replace(`${oldEditInput}`, `${editInputValue}`);
+    return itemReplace;
+  });
+  setDataBase(localData);
   editTask(editInputValue);
 });
 
@@ -126,7 +146,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (getDataBase()) {
     const localData = getDataBase();
     localData.forEach((item) => {
-      createTodoElements(item.title);
+      todoList.innerHTML = item;
     });
   }
 });

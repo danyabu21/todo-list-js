@@ -239,26 +239,26 @@ h3 {
   margin-left: 0.4rem;
 }
 
-.done {
+[checked] {
   background-color: var(--neutral-color-6);
 }
 
-.todo.done button:hover,
-.todo.done button:focus {
+.todo[checked] button:hover,
+.todo[checked] button:focus {
   background-color: var(--neutral-color-5);
   border: 2px solid var(--neutral-color-5);
 }
 
-.todo.done button:hover i,
-.todo.done button:focus i {
+.todo[checked] button:hover i,
+.todo[checked] button:focus i {
   color: var(--neutral-color-1);
 }
 
-.done:hover {
+[checked]:hover {
   background-color: var(--purple-color-2);
 }
 
-.done h3 {
+[checked] h3 {
   color: var(--green-color-1);
   text-decoration: line-through;
   font-style: italic;
